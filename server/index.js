@@ -1,3 +1,4 @@
+// src/app.js or src/index.js
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
@@ -18,9 +19,21 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+
+// Configure CORS options
+const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000'];
+const corsOptions = {
+  origin: allowedOrigins,
+  optionsSuccessStatus: 200,
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
+
+// Initialize Socket.IO with CORS configuration
 const io = new Server(server, {
   cors: {
-    origin: '*', // Allow all origins for development; restrict in production
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
   },
 });
@@ -33,7 +46,6 @@ mongoose
 
 // Middleware
 app.use(express.json());
-app.use(cors());
 
 // API Routes
 app.use('/api/auth', authRoutes);
